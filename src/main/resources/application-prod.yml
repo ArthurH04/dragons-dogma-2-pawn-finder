@@ -1,0 +1,8 @@
+spring:
+   datasource:
+      url: jdbc:postgresql://db:5432/dd2pawn
+      username: postgres
+      password: root
+
+   profiles:
+      active: local

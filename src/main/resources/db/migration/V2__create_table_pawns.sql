@@ -1,0 +1,58 @@
+CREATE TYPE gender_enum AS ENUM (
+    'MALE',
+    'FEMALE'
+);
+
+CREATE TYPE vocations_enum AS ENUM (
+    'FIGHTER',
+    'ARCHER',
+    'MAGE',
+    'THIEF',
+    'WARRIOR',
+    'SORCERER'
+);
+
+CREATE TYPE inclinations_enum AS ENUM (
+    'STRAIGHTFORWARD',
+    'KINDHEARTED',
+    'CALM',
+    'SIMPLE'
+);
+
+CREATE TYPE specializations_enum AS ENUM (
+    'APHONITE',
+    'CHIRURGEON',
+    'FORAGER',
+    'HAWKER',
+    'LOGISTICIAN',
+    'WOODLAND_WORDSMITH'
+);
+
+CREATE TYPE platform_enum AS ENUM (
+    'PLAYSTATION',
+    'XBOX',
+    'STEAM'
+);
+
+CREATE TABLE pawns (
+    id UUID PRIMARY KEY,
+    pawn_id VARCHAR(50) NOT NULL UNIQUE,
+    name VARCHAR(255) NOT NULL UNIQUE,
+    gender gender_enum NOT NULL,
+    level INTEGER NOT NULL,
+    vocations vocations_enum NOT NULL,
+    inclinations inclinations_enum NOT NULL,
+    specializations specializations_enum NOT NULL,
+    notes VARCHAR(255),
+    image_url VARCHAR(255) NOT NULL,
+    platform platform_enum NOT NULL,
+    platform_identifier VARCHAR(100) NOT NULL,
+    user_id UUID NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL,
+
+    CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE INDEX idx_pawn_level ON pawns(level);
+CREATE INDEX idx_pawn_platform ON pawns(platform);
