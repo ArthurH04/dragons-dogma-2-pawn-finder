@@ -1,4 +1,14 @@
 package com.dd2pawn.pawnapi.mapper;
 
-public class PawnMapper {
+import com.dd2pawn.pawnapi.dto.PawnRequest;
+import com.dd2pawn.pawnapi.dto.PawnResponse;
+import com.dd2pawn.pawnapi.model.Pawn;
+import org.mapstruct.Mapper;
+
+@Mapper(componentModel = "spring")
+public interface PawnMapper {
+
+    PawnResponse toResponse(Pawn pawn);
+
+    Pawn toEntity(PawnRequest request);
 }

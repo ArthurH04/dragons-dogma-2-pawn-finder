@@ -3,6 +3,9 @@ package com.dd2pawn.pawnapi.model;
 import com.dd2pawn.pawnapi.model.enums.*;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.UUID;
 
@@ -12,6 +15,7 @@ import java.util.UUID;
         @Index(name = "idx_pawn_platform", columnList = "platform"),
 })
 @Data
+@ToString(exclude = "user")
 public class Pawn extends BaseEntity {
 
     @Id
@@ -27,6 +31,7 @@ public class Pawn extends BaseEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private Gender gender;
 
     @Column(nullable = false)
@@ -34,14 +39,17 @@ public class Pawn extends BaseEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private Vocations vocations;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private Inclinations inclinations;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private Specializations specializations;
 
     private String notes;
@@ -51,6 +59,7 @@ public class Pawn extends BaseEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private Platform platform;
 
     @Column(name = "platform_identifier", length = 100, nullable = false)
