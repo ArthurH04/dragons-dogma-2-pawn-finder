@@ -5,9 +5,7 @@ import com.dd2pawn.pawnapi.dto.PawnResponse;
 import com.dd2pawn.pawnapi.mapper.PawnMapper;
 import com.dd2pawn.pawnapi.model.Pawn;
 import com.dd2pawn.pawnapi.model.enums.Gender;
-import com.dd2pawn.pawnapi.repository.PawnRepository;
 import com.dd2pawn.pawnapi.service.PawnService;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
