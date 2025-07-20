@@ -3,6 +3,7 @@ package com.dd2pawn.pawnapi.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.Data;
+import lombok.ToString;
 
 import java.util.List;
 import java.util.UUID;
@@ -10,6 +11,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "users")
 @Data
+@ToString(exclude = "pawns")
 public class User extends BaseEntity {
 
     @Id

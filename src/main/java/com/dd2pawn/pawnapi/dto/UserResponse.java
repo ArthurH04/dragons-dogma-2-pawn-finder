@@ -11,5 +11,5 @@ import java.util.UUID;
 public class UserResponse {
     private UUID id;
     private String username;
-    private List<Pawn> pawns;
+    private List<PawnResponse> pawns;
 }
