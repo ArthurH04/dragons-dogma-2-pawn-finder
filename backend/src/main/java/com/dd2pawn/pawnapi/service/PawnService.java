@@ -40,6 +40,10 @@ public class PawnService {
         return pawnRepository.findById(id);
     }
 
+    public Optional<Pawn> findByPawnId(String id) {
+        return pawnRepository.findByPawnId(id);
+    }
+
     public void delete(Pawn entity) {pawnRepository.delete(entity);
     }
 
