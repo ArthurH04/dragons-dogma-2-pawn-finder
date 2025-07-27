@@ -1,7 +1,5 @@
 package com.dd2pawn.pawnapi.dto;
 
-import com.dd2pawn.pawnapi.model.Pawn;
-import com.dd2pawn.pawnapi.model.enums.*;
 import lombok.Data;
 
 import java.util.List;
