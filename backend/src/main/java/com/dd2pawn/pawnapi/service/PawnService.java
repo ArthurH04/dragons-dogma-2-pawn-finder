@@ -6,14 +6,13 @@ import com.dd2pawn.pawnapi.model.Pawn;
 import com.dd2pawn.pawnapi.model.User;
 import com.dd2pawn.pawnapi.model.enums.*;
 import com.dd2pawn.pawnapi.repository.PawnRepository;
-import com.dd2pawn.pawnapi.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -27,11 +26,9 @@ public class PawnService {
 
     private final PawnRepository pawnRepository;
     private final PawnMapper pawnMapper;
-    private final UserRepository userRepository;
 
-    public Pawn save(PawnRequest pawnRequest){
+    public Pawn save(PawnRequest pawnRequest, User user) {
         Pawn pawn = pawnMapper.toEntity(pawnRequest);
-        User user = userRepository.findById(pawnRequest.getUserId()).orElseThrow(() -> new EntityNotFoundException("User not found"));
         pawn.setUser(user);
         return pawnRepository.save(pawn);
     }
@@ -44,45 +41,47 @@ public class PawnService {
         return pawnRepository.findByPawnId(id);
     }
 
-    public void delete(Pawn entity) {pawnRepository.delete(entity);
+    public void delete(UUID pawnId,User user) {
+        Pawn pawn = pawnRepository.findById(pawnId)
+            .orElseThrow(() -> new EntityNotFoundException("Pawn not found"));
+
+    if (!pawn.getUser().getId().equals(user.getId())) {
+        throw new AccessDeniedException("You cannot delete another user's pawn");
+    }
+
+    pawnRepository.delete(pawn);
     }
 
     public Page<Pawn> getPawns(String name, Integer level, String platform, Gender gender, Integer page, Integer size) {
         Specification<Pawn> specs = (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
 
-        if(name != null && !name.isEmpty()){
+        if (name != null && !name.isEmpty()) {
             specs = specs.and(nameLike(name));
         }
 
-        if(level != null && level > 1){
+        if (level != null && level > 1) {
             specs = specs.and(levelEquals(level));
         }
 
-        if(platform != null && !platform.isEmpty()){
+        if (platform != null && !platform.isEmpty()) {
             specs = specs.and(platformLike(name));
         }
 
-        if(gender != null && !gender.name().isEmpty()){
+        if (gender != null && !gender.name().isEmpty()) {
             specs = specs.and(genderEqual(gender));
         }
         Pageable pageRequest = PageRequest.of(page, size);
         return pawnRepository.findAll(specs, pageRequest);
     }
 
-    public Pawn updatePawn(UUID id, PawnRequest pawnRequest) {
-        Optional<Pawn> pawnOptional = pawnRepository.findById(id);
+    public Pawn updatePawn(UUID pawnId, PawnRequest pawnRequest, User user) {
+        Pawn pawn = pawnRepository.findById(pawnId)
+                .orElseThrow(() -> new EntityNotFoundException("Pawn not found"));
 
-        if (pawnOptional.isEmpty()) {
-            throw new EntityNotFoundException("Pawn with id " + id + " not found.");
+        if (!pawn.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("You cannot update another user's pawn");
+
         }
-
-        User user = userRepository.findById(pawnRequest.getUserId()).orElseThrow(() -> new EntityNotFoundException("User with id " + pawnRequest.getUserId() + " not found."));
-        Pawn pawn = getPawn(pawnRequest, pawnOptional, user);
-        return pawnRepository.save(pawn);
-    }
-
-    private static Pawn getPawn(PawnRequest pawnRequest, Optional<Pawn> pawnOptional, User user) {
-        Pawn pawn = pawnOptional.get();
         pawn.setName(pawnRequest.getName());
         pawn.setGender(pawnRequest.getGender());
         pawn.setLevel(pawnRequest.getLevel());
@@ -93,7 +92,6 @@ public class PawnService {
         pawn.setImageUrl(pawnRequest.getImageUrl());
         pawn.setPlatform(pawnRequest.getPlatform());
         pawn.setPlatformIdentifier(pawnRequest.getPlatformIdentifier());
-        pawn.setUser(user);
-        return pawn;
+        return pawnRepository.save(pawn);
     }
 }

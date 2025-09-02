@@ -4,19 +4,20 @@ import com.dd2pawn.pawnapi.dto.PawnRequest;
 import com.dd2pawn.pawnapi.dto.PawnResponse;
 import com.dd2pawn.pawnapi.mapper.PawnMapper;
 import com.dd2pawn.pawnapi.model.Pawn;
+import com.dd2pawn.pawnapi.model.User;
 import com.dd2pawn.pawnapi.model.enums.Gender;
 import com.dd2pawn.pawnapi.service.PawnService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.UUID;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
@@ -59,25 +60,21 @@ public class PawnController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> savePawn(@RequestBody @Valid PawnRequest pawn){
-        Pawn pawnEntity = pawnService.save(pawn);
+    public ResponseEntity<Void> savePawn(@RequestBody @Valid PawnRequest pawn, @AuthenticationPrincipal User user){
+        Pawn pawnEntity = pawnService.save(pawn, user);
         return ResponseEntity.created(ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(pawnEntity.getId()).toUri()).build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PawnResponse> updatePawn(@PathVariable("id") String id, @RequestBody @Valid PawnRequest pawnRequest){
+    public ResponseEntity<PawnResponse> updatePawn(@PathVariable("id") String id, @RequestBody @Valid PawnRequest pawnRequest, @AuthenticationPrincipal User user){
         UUID pawnId = UUID.fromString(id);
-        pawnService.updatePawn(pawnId, pawnRequest);
+        pawnService.updatePawn(pawnId, pawnRequest, user);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> delete(@PathVariable("id") String id){
-        UUID pawnId = UUID.fromString(id);
-        return pawnService.findById(pawnId).map(pawn -> {
-            pawnService.delete(pawn);
-            return ResponseEntity.noContent().build();
-        }).orElseGet(() -> ResponseEntity.noContent().build());
-
+    public ResponseEntity<Object> delete(@PathVariable("id") UUID id, @AuthenticationPrincipal User user){
+        pawnService.delete(id, user);
+    return ResponseEntity.noContent().build();
     }
 }
