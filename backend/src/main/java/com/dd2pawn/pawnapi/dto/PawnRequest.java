@@ -40,5 +40,4 @@ public class PawnRequest {
 
     @NotBlank(message = "Platform identifier url cannot be empty")
     private String platformIdentifier;
-    private UUID userId;
 }
