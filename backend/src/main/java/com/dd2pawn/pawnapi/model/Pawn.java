@@ -23,7 +23,7 @@ public class Pawn extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "pawn_id", length = 50, nullable = false)
+    @Column(name = "pawn_id", length = 50, nullable = false, unique = true)
     private String pawnId;
 
     @Column(nullable = false)
