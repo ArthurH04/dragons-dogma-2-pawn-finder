@@ -4,8 +4,8 @@ import com.dd2pawn.pawnapi.dto.UserRequest;
 import com.dd2pawn.pawnapi.exceptions.DuplicateEntryException;
 import com.dd2pawn.pawnapi.exceptions.OperationNotAllowedException;
 import com.dd2pawn.pawnapi.mapper.UserMapper;
-import com.dd2pawn.pawnapi.model.Pawn;
 import com.dd2pawn.pawnapi.model.User;
+import com.dd2pawn.pawnapi.model.enums.Role;
 import com.dd2pawn.pawnapi.repository.PawnRepository;
 import com.dd2pawn.pawnapi.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -37,6 +37,7 @@ public class UserService {
             throw new DuplicateEntryException("User already exists with login: " + userRequest.getUsername());
         }
         User user = pawnMapper.toEntity(userRequest);
+        user.setRole(Role.USER);
         return userRepository.save(user);
     }
 
