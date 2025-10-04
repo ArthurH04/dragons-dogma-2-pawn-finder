@@ -29,12 +29,6 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
-    public ResponseEntity<Void> saveUser(@RequestBody @Valid UserRequest userRequest){
-        User userEntity = userService.save(userRequest);
-        return ResponseEntity.created(ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(userEntity.getId()).toUri()).build();
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteUser(@PathVariable("id") String id){
         UUID userId = UUID.fromString(id);
