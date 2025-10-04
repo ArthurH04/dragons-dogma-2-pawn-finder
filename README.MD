@@ -95,6 +95,12 @@ PGADMIN_PASSWORD=your_admin_password_here
 PGADMIN_PORT=5050
 ```
 
+**JWT Secrets Configuration**
+```
+JWT_SECRET=min 512bits
+JWT_EXPIRATION=
+```
+
 4. Start the Docker containers:
 
 ```bash
