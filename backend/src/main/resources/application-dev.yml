@@ -1,14 +1,21 @@
 spring:
-   datasource:
-      url: jdbc:postgresql://localhost:5432/dd2pawn
-      username: postgres
-      password: root
-      driver-class-name: org.postgresql.Driver
+  datasource:
+    url: jdbc:postgresql://localhost:5433/dd2pawn
+    username: postgres
+    password: root
+    driver-class-name: org.postgresql.Driver
 
-   jpa:
-      show-sql: true
-      hibernate:
-         ddl-auto: validate
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
 
-   flyway:
-      baseline-on-migrate: false
+  flyway:
+    baseline-on-migrate: false
+
+  config:
+    import: optional:file:./backend/.env[.properties]
+
+security:
+  jwtSecret: ${JWT_SECRET}
+  jwtExpiration: ${JWT_EXPIRATION}
