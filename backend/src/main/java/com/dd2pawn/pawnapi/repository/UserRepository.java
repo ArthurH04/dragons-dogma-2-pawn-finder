@@ -12,5 +12,6 @@ import com.dd2pawn.pawnapi.model.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
     boolean existsByUsername(String username);
+    boolean existsByEmail(String email);
     Optional<User> findByEmail(String email);
 }

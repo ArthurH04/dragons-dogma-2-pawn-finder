@@ -1,8 +1,8 @@
 package com.dd2pawn.pawnapi.service;
 
 import com.dd2pawn.pawnapi.dto.UserRequest;
-import com.dd2pawn.pawnapi.exceptions.DuplicateEntryException;
-import com.dd2pawn.pawnapi.exceptions.OperationNotAllowedException;
+import com.dd2pawn.pawnapi.exception.DuplicateEntryException;
+import com.dd2pawn.pawnapi.exception.OperationNotAllowedException;
 import com.dd2pawn.pawnapi.mapper.UserMapper;
 import com.dd2pawn.pawnapi.model.User;
 import com.dd2pawn.pawnapi.model.enums.Role;
@@ -21,25 +21,14 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PawnRepository pawnRepository;
-    private final UserMapper pawnMapper;
-    private final PasswordEncoder passwordEncoder;
 
     public Optional<User> findById(UUID id) {
         return userRepository.findById(id);
     }
-
-    public User save(UserRequest userRequest) {
-        String password = userRequest.getPassword();
-        userRequest.setPassword(passwordEncoder.encode(password));
-
-        boolean exists = userRepository.existsByUsername(userRequest.getUsername());
-        if(exists) {
-            throw new DuplicateEntryException("User already exists with login: " + userRequest.getUsername());
-        }
-        User user = pawnMapper.toEntity(userRequest);
-        user.setRole(Role.USER);
-        return userRepository.save(user);
-    }
+    
+    public Optional<User> findByEmail(String email) {
+		return userRepository.findByEmail(email);
+	}
 
     public void delete(User user) {
         if (hasAPawn(user)){
