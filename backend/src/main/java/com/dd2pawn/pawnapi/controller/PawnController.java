@@ -7,6 +7,8 @@ import com.dd2pawn.pawnapi.model.Pawn;
 import com.dd2pawn.pawnapi.model.User;
 import com.dd2pawn.pawnapi.model.enums.Gender;
 import com.dd2pawn.pawnapi.service.PawnService;
+import com.dd2pawn.pawnapi.service.UserService;
+
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -14,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.UUID;
@@ -27,6 +28,7 @@ public class PawnController {
 
     private final PawnService pawnService;
     private final PawnMapper pawnMapper;
+    private final UserService userService;
 
     @GetMapping("/{id}")
     public ResponseEntity<PawnResponse> getPawn(@PathVariable("id") String id){
@@ -60,21 +62,24 @@ public class PawnController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> savePawn(@RequestBody @Valid PawnRequest pawn, @AuthenticationPrincipal User user){
+    public ResponseEntity<Void> savePawn(@RequestBody @Valid PawnRequest pawn, @AuthenticationPrincipal UserDetails userDetails){
+    	User user = userService.findByEmail(userDetails.getUsername()).orElseThrow(() -> new RuntimeException("User not found"));
         Pawn pawnEntity = pawnService.save(pawn, user);
         return ResponseEntity.created(ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(pawnEntity.getId()).toUri()).build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PawnResponse> updatePawn(@PathVariable("id") String id, @RequestBody @Valid PawnRequest pawnRequest, @AuthenticationPrincipal User user){
+    public ResponseEntity<PawnResponse> updatePawn(@PathVariable("id") String id, @RequestBody @Valid PawnRequest pawnRequest, @AuthenticationPrincipal UserDetails userDetails){
         UUID pawnId = UUID.fromString(id);
+        User user = userService.findByEmail(userDetails.getUsername()).orElseThrow(() -> new RuntimeException("User not found"));
         pawnService.updatePawn(pawnId, pawnRequest, user);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> delete(@PathVariable("id") UUID id, @AuthenticationPrincipal User user){
+    public ResponseEntity<Object> delete(@PathVariable("id") UUID id, @AuthenticationPrincipal UserDetails userDetails){
+        User user = userService.findByEmail(userDetails.getUsername()).orElseThrow(() -> new RuntimeException("User not found"));
         pawnService.delete(id, user);
-    return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent().build();
     }
 }
