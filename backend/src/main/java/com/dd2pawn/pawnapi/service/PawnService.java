@@ -1,6 +1,7 @@
 package com.dd2pawn.pawnapi.service;
 
 import com.dd2pawn.pawnapi.dto.PawnRequest;
+import com.dd2pawn.pawnapi.exception.DuplicateEntryException;
 import com.dd2pawn.pawnapi.mapper.PawnMapper;
 import com.dd2pawn.pawnapi.model.Pawn;
 import com.dd2pawn.pawnapi.model.User;
@@ -28,6 +29,11 @@ public class PawnService {
     private final PawnMapper pawnMapper;
 
     public Pawn save(PawnRequest pawnRequest, User user) {
+    	
+    	if(pawnRepository.findByPawnId(pawnRequest.getPawnId()).isPresent()) {
+    		throw new DuplicateEntryException("pawnId", "pawnId is already in use");
+    	}
+    	
         Pawn pawn = pawnMapper.toEntity(pawnRequest);
         pawn.setUser(user);
         return pawnRepository.save(pawn);
@@ -41,15 +47,15 @@ public class PawnService {
         return pawnRepository.findByPawnId(id);
     }
 
-    public void delete(UUID pawnId,User user) {
+    public void delete(UUID pawnId, User user) {
         Pawn pawn = pawnRepository.findById(pawnId)
-            .orElseThrow(() -> new EntityNotFoundException("Pawn not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Pawn not found"));
 
-    if (!pawn.getUser().getId().equals(user.getId())) {
-        throw new AccessDeniedException("You cannot delete another user's pawn");
-    }
+        if (!pawn.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("You cannot delete another user's pawn");
+        }
 
-    pawnRepository.delete(pawn);
+        pawnRepository.delete(pawn);
     }
 
     public Page<Pawn> getPawns(String name, Integer level, String platform, Gender gender, Integer page, Integer size) {
@@ -80,8 +86,8 @@ public class PawnService {
 
         if (!pawn.getUser().getId().equals(user.getId())) {
             throw new AccessDeniedException("You cannot update another user's pawn");
-
         }
+
         pawn.setName(pawnRequest.getName());
         pawn.setGender(pawnRequest.getGender());
         pawn.setLevel(pawnRequest.getLevel());
@@ -92,6 +98,12 @@ public class PawnService {
         pawn.setImageUrl(pawnRequest.getImageUrl());
         pawn.setPlatform(pawnRequest.getPlatform());
         pawn.setPlatformIdentifier(pawnRequest.getPlatformIdentifier());
+        if (!pawn.getPawnId().equals(pawnRequest.getPawnId())) {
+            if (pawnRepository.findByPawnId(pawnRequest.getPawnId()).isPresent()) {
+                throw new IllegalArgumentException("pawnId already exists");
+            }
+            pawn.setPawnId(pawnRequest.getPawnId());
+        }
         return pawnRepository.save(pawn);
     }
 }
