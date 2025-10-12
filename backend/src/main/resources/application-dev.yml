@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/dd2pawn
+    url: jdbc:postgresql://localhost:5432/dd2pawn
     username: postgres
     password: root
     driver-class-name: org.postgresql.Driver
@@ -11,6 +11,7 @@ spring:
       ddl-auto: validate
 
   flyway:
+    enabled: true
     baseline-on-migrate: false
 
   config:
