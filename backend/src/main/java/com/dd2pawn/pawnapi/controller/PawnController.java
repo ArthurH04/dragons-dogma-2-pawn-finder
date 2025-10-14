@@ -53,7 +53,7 @@ public class PawnController {
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "level", required = false) Integer level,
             @RequestParam(value = "platform", required = false) String platform,
-            @RequestParam(value = "gender", required = false) Gender gender,
+            @RequestParam(value = "gender", required = false) String gender,
             @RequestParam(value = "page", defaultValue = "0") Integer page,
             @RequestParam(value = "size", defaultValue = "10") Integer size) {
         Page<Pawn> result = pawnService.getPawns(name, level, platform, gender, page, size);
