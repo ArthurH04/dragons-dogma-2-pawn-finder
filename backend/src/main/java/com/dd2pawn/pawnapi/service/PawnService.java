@@ -58,7 +58,7 @@ public class PawnService {
         pawnRepository.delete(pawn);
     }
 
-    public Page<Pawn> getPawns(String name, Integer level, String platform, Gender gender, Integer page, Integer size) {
+    public Page<Pawn> getPawns(String name, Integer level, String platform, String gender, Integer page, Integer size) {
         Specification<Pawn> specs = (root, query, criteriaBuilder) -> criteriaBuilder.conjunction();
 
         if (name != null && !name.isEmpty()) {
@@ -70,10 +70,10 @@ public class PawnService {
         }
 
         if (platform != null && !platform.isEmpty()) {
-            specs = specs.and(platformLike(name));
+            specs = specs.and(platformLike(platform));
         }
 
-        if (gender != null && !gender.name().isEmpty()) {
+        if (gender != null && !gender.isEmpty()) {
             specs = specs.and(genderEqual(gender));
         }
         Pageable pageRequest = PageRequest.of(page, size);
