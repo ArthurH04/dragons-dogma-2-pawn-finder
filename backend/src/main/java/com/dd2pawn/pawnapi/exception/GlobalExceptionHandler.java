@@ -21,6 +21,12 @@ public class GlobalExceptionHandler {
     public ResponseError handleAccessDenied(AccessDeniedException ex) {
 		return new ResponseError(403, "Access Denied", List.of(new CustomFieldError("access", ex.getMessage())));
 	}
+
+	@ExceptionHandler(InvalidCredentialsException.class)
+	@ResponseStatus(HttpStatus.UNAUTHORIZED)
+	public ResponseError handleInvalidCredentials(InvalidCredentialsException ex) {
+		return new ResponseError(401, "Invalid Credentials", List.of(new CustomFieldError("credentials", ex.getMessage())));
+	}
 	
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	@ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
