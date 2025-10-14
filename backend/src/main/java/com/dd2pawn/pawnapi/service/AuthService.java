@@ -2,6 +2,7 @@ package com.dd2pawn.pawnapi.service;
 
 import com.dd2pawn.pawnapi.dto.RegisterRequest;
 import com.dd2pawn.pawnapi.exception.DuplicateEntryException;
+import com.dd2pawn.pawnapi.exception.InvalidCredentialsException;
 import com.dd2pawn.pawnapi.dto.AuthenticationRequest;
 import com.dd2pawn.pawnapi.dto.AuthenticationResponse;
 import com.dd2pawn.pawnapi.model.User;
@@ -48,10 +49,15 @@ public class AuthService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
+
+        try{
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
                         request.getPassword()));
+        }catch(Exception ex){
+        	throw new InvalidCredentialsException("Invalid email or password");
+        }
         var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow();
 
