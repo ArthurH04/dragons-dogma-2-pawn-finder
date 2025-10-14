@@ -7,6 +7,7 @@ import lombok.ToString;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -42,10 +43,11 @@ public class Pawn extends BaseEntity {
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private Vocations vocations;
 
-    @Column(nullable = false)
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "pawn_inclinations", joinColumns = @JoinColumn(name = "pawn_id"))
     @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    private Inclinations inclinations;
+    @Column(nullable = false)
+    private List<Inclinations> inclinations;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

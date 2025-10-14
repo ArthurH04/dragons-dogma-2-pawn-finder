@@ -4,6 +4,7 @@ import com.dd2pawn.pawnapi.model.enums.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -24,7 +25,7 @@ public class PawnRequest {
     private Vocations vocations;
 
     @NotNull(message = "Inclination cannot be empty")
-    private Inclinations inclinations;
+    private List<Inclinations> inclinations;
 
     @NotNull(message = "Specialization cannot be empty")
     private Specializations specializations;
