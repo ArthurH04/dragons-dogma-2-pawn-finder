@@ -1,13 +1,16 @@
 package com.dd2pawn.pawnapi.service;
 
+import com.dd2pawn.pawnapi.dto.CustomFieldError;
 import com.dd2pawn.pawnapi.dto.PawnRequest;
 import com.dd2pawn.pawnapi.exception.DuplicateEntryException;
+import com.dd2pawn.pawnapi.exception.MultipleFieldErrorsException;
 import com.dd2pawn.pawnapi.mapper.PawnMapper;
 import com.dd2pawn.pawnapi.model.Pawn;
 import com.dd2pawn.pawnapi.model.User;
 import com.dd2pawn.pawnapi.model.enums.*;
 import com.dd2pawn.pawnapi.repository.PawnRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,6 +19,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,11 +33,22 @@ public class PawnService {
     private final PawnRepository pawnRepository;
     private final PawnMapper pawnMapper;
 
+    @Transactional
     public Pawn save(PawnRequest pawnRequest, User user) {
     	
-    	if(pawnRepository.findByPawnId(pawnRequest.getPawnId()).isPresent()) {
-    		throw new DuplicateEntryException("pawnId", "pawnId is already in use");
-    	}
+    	List<CustomFieldError> errors = new ArrayList<>();
+
+    if(pawnRepository.findByPawnId(pawnRequest.getPawnId()).isPresent()) {
+        errors.add(new CustomFieldError("pawnId", "Pawn ID is already in use"));
+    }
+
+     if(pawnRepository.findByName(pawnRequest.getName()).isPresent()) {
+        errors.add(new CustomFieldError("name", "Name is already in use"));
+    }
+
+    if (!errors.isEmpty()) {
+        throw new MultipleFieldErrorsException(errors);
+    }
     	
         Pawn pawn = pawnMapper.toEntity(pawnRequest);
         pawn.setUser(user);
