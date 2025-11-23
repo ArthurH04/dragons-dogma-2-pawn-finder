@@ -86,12 +86,12 @@ public class AuthService {
                                 .build();
         }
 
-        public ResponseEntity refreshToken(HttpServletRequest request, HttpServletResponse response)
+        public ResponseEntity<AuthenticationResponse> refreshToken(HttpServletRequest request, HttpServletResponse response)
                         throws IOException {
                 final String authHeader = request.getHeader("Authorization");
 
                 if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                        return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
                 }
 
                 String token = authHeader.substring(7);
@@ -105,9 +105,9 @@ public class AuthService {
 
                         revokeAllUserTokens(user);
                         saveUserToken(accessToken, refreshToken, user);
-                        return new ResponseEntity(new AuthenticationResponse(accessToken, refreshToken), HttpStatus.OK);
+                        return ResponseEntity.ok(AuthenticationResponse.builder().token(accessToken).refreshToken(refreshToken).build());
                 }
-                return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 
         }
 

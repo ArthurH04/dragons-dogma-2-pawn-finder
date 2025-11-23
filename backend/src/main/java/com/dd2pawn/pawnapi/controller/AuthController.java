@@ -32,7 +32,7 @@ public class AuthController {
     }
 
     @PostMapping("/refresh-token")
-    public ResponseEntity refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException{
+    public ResponseEntity<AuthenticationResponse> refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException{
         return authService.refreshToken(request, response);
     }
 }

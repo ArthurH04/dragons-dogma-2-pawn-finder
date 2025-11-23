@@ -50,7 +50,7 @@ public JwtAuthenticationFilter jwtAuthenticationFilter(JwtUtils jwtUtils, Custom
                                 .csrf(csrf -> csrf.disable())
                                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                                 .authorizeHttpRequests(auth -> auth
-                                                .requestMatchers("/refresh-token").permitAll()
+                                                .requestMatchers("/api/auth/refresh-token").permitAll()
                                                 .requestMatchers("/api/auth/**").permitAll()
                                                 .requestMatchers("/api/pawns","/api/pawns/**").permitAll()
                                                 .requestMatchers("/api/users/**").authenticated()
