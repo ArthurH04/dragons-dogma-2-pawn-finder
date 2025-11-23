@@ -99,6 +99,7 @@ PGADMIN_PORT=5050
 ```
 JWT_SECRET=min 512bits
 JWT_EXPIRATION=
+JWT_REFRESH_EXPIRATION=
 ```
 
 4. Start the Docker containers:

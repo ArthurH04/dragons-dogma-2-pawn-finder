@@ -13,4 +13,5 @@ import java.util.UUID;
 public interface PawnRepository extends JpaRepository<Pawn, UUID>, JpaSpecificationExecutor<Pawn> {
     boolean existsByUser(User user);
     Optional<Pawn> findByPawnId(String pawnId);
+    Optional<Pawn> findByName(String pawnName);
 }

@@ -20,3 +20,4 @@ spring:
 security:
   jwtSecret: ${JWT_SECRET}
   jwtExpiration: ${JWT_EXPIRATION}
+  jwtRefreshExpiration: ${JWT_REFRESH_EXPIRATION}

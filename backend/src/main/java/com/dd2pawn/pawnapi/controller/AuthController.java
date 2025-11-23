@@ -5,7 +5,13 @@ import com.dd2pawn.pawnapi.dto.RegisterRequest;
 import com.dd2pawn.pawnapi.dto.AuthenticationRequest;
 import com.dd2pawn.pawnapi.dto.AuthenticationResponse;
 import com.dd2pawn.pawnapi.service.AuthService;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+
+import java.io.IOException;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,5 +29,10 @@ public class AuthController {
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
         return ResponseEntity.ok(authService.authenticate(request));
+    }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException{
+        return authService.refreshToken(request, response);
     }
 }
