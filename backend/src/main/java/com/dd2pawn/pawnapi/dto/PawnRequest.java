@@ -9,6 +9,9 @@ import java.util.UUID;
 
 @Data
 public class PawnRequest {
+
+    @NotBlank(message = "Pawn ID cannot be empty")
+
     private String pawnId;
 
     @NotBlank(message = "Name cannot be empty")
