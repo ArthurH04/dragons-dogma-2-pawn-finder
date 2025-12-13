@@ -52,7 +52,7 @@ public class JwtUtils {
     public String generateRefreshToken(UserDetails userDetails) {
         Map<String, Object> extraClaims = new HashMap<>();
         extraClaims.put("type", "REFRESH");
-        return createToken(new HashMap<>(), userDetails, jwtRefreshExpiration);
+        return createToken(extraClaims, userDetails, jwtRefreshExpiration);
     }
 
     private String createToken(Map<String, Object> extraClaims, UserDetails userDetails, long expiration) {
