@@ -71,4 +71,8 @@ public class User extends BaseEntity implements UserDetails {
     public String getUsername() {
         return email;
     }
+
+    public String getDisplayName() {
+        return username;
+    }
 }
