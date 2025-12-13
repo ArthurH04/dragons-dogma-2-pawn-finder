@@ -55,6 +55,7 @@ public JwtAuthenticationFilter jwtAuthenticationFilter(JwtUtils jwtUtils, Custom
                                                 .requestMatchers("/api/pawns","/api/pawns/**").permitAll()
                                                 .requestMatchers("/api/users/**").authenticated()
                                                 .requestMatchers("/profile/**").authenticated()
+                                                .requestMatchers("/me").authenticated()
                                                 .anyRequest().authenticated())
                                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                                 .sessionManagement(session -> session

@@ -9,6 +9,8 @@ import com.dd2pawn.pawnapi.model.enums.Role;
 import com.dd2pawn.pawnapi.repository.PawnRepository;
 import com.dd2pawn.pawnapi.repository.UserRepository;
 import lombok.AllArgsConstructor;
+
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +41,13 @@ public class UserService {
 
     public boolean hasAPawn(User user) {
         return pawnRepository.existsByUser(user);
+    }
+
+    public String getCurrentUser(Authentication authentication){
+        String email = authentication.getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow();
+        return user.getDisplayName();
     }
 
 }
