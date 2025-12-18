@@ -10,8 +10,8 @@ import com.dd2pawn.pawnapi.model.User;
 import com.dd2pawn.pawnapi.model.enums.Role;
 import com.dd2pawn.pawnapi.repository.TokenRepository;
 import com.dd2pawn.pawnapi.repository.UserRepository;
+import com.dd2pawn.pawnapi.security.filter.AuthRateLimitFilter;
 import com.dd2pawn.pawnapi.security.jwt.JwtUtils;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -35,6 +35,10 @@ public class AuthService {
         private final JwtUtils jwtService;
         private final AuthenticationManager authenticationManager;
         private final TokenRepository tokenRepository;
+        private final AuthRateLimitFilter authRateLimitFilter;
+        private final LoginRateLimitService loginRateLimitService;
+        private final HttpServletRequest httpRequest;
+
 
         public AuthenticationResponse register(RegisterRequest request) {
 
@@ -64,12 +68,21 @@ public class AuthService {
 
         public AuthenticationResponse authenticate(AuthenticationRequest request) {
 
+                String ip = authRateLimitFilter.getClientIp(httpRequest);
+                loginRateLimitService.checkBlockedIp(ip);
+
                 try {
                         authenticationManager.authenticate(
                                         new UsernamePasswordAuthenticationToken(
                                                         request.getEmail(),
                                                         request.getPassword()));
                 } catch (Exception ex) {
+
+                        
+                        System.out.println("Failed login attempt from IP: " + ip);
+                        loginRateLimitService.consumeFailedAttempt(ip);
+
+
                         throw new InvalidCredentialsException("Invalid email or password");
                 }
                 User user = userRepository.findByEmail(request.getEmail())

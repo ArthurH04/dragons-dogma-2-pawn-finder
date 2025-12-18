@@ -15,6 +15,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.dd2pawn.pawnapi.security.filter.JwtAuthenticationFilter;
+import com.dd2pawn.pawnapi.security.filter.AuthRateLimitFilter;
 import com.dd2pawn.pawnapi.security.jwt.AuthEntryPointJwt;
 import com.dd2pawn.pawnapi.security.jwt.JwtUtils;
 import com.dd2pawn.pawnapi.security.service.CustomUserDetailsService;
@@ -31,11 +32,14 @@ public class WebSecurityConfiguration {
 
         private final CustomLogoutHandler logoutHandler;
 
+        private final AuthRateLimitFilter authRateLimitFilter;
+
         // JWT filter to validate tokens with every request
         @Bean
-public JwtAuthenticationFilter jwtAuthenticationFilter(JwtUtils jwtUtils, CustomUserDetailsService userDetailsService) {
-    return new JwtAuthenticationFilter(jwtUtils, userDetailsService);
-}
+        public JwtAuthenticationFilter jwtAuthenticationFilter(JwtUtils jwtUtils,
+                        CustomUserDetailsService userDetailsService) {
+                return new JwtAuthenticationFilter(jwtUtils, userDetailsService);
+        }
 
         @Bean
         // Used to authenticate user credentials and validate
@@ -44,28 +48,32 @@ public JwtAuthenticationFilter jwtAuthenticationFilter(JwtUtils jwtUtils, Custom
         }
 
         @Bean
-        public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
+        public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                        JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
                 http
-                .cors().and()
+                                .cors().and()
                                 .csrf(csrf -> csrf.disable())
                                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers("/api/auth/refresh-token").permitAll()
                                                 .requestMatchers("/api/auth/**").permitAll()
-                                                .requestMatchers("/api/pawns","/api/pawns/**").permitAll()
+                                                .requestMatchers("/api/pawns", "/api/pawns/**").permitAll()
+                                                .requestMatchers("/api/users/change-password").authenticated()
                                                 .requestMatchers("/api/users/**").authenticated()
                                                 .requestMatchers("/profile/**").authenticated()
                                                 .requestMatchers("/me").authenticated()
                                                 .anyRequest().authenticated())
-                                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                                .addFilterBefore(authRateLimitFilter, UsernamePasswordAuthenticationFilter.class)
+                                .addFilterBefore(jwtAuthenticationFilter,
+                                                UsernamePasswordAuthenticationFilter.class)
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-                                http.logout(logout -> logout
-                                        .logoutUrl("/api/auth/logout")
-                                        .addLogoutHandler(logoutHandler)
-                                        .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
-                                        .permitAll()
-                                );
+                http.logout(logout -> logout
+                                .logoutUrl("/api/auth/logout")
+                                .addLogoutHandler(logoutHandler)
+                                .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder
+                                                .clearContext())
+                                .permitAll());
                 return http.build();
         }
 

@@ -53,4 +53,10 @@ public class GlobalExceptionHandler {
     public ResponseError handleDuplicateEntry(DuplicateEntryException ex) {
         return new ResponseError(409, "Duplicate Entry", List.of(new CustomFieldError(ex.getField(), ex.getMessage())));
     }
+
+    @ExceptionHandler(TooManyLoginAttemptsException.class)
+    @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
+    public ResponseError handleTooManyLoginAttempts(TooManyLoginAttemptsException ex) {
+        return new ResponseError(429, "Too Many Requests", List.of(new CustomFieldError("login", ex.getMessage())));
+    }
 }
