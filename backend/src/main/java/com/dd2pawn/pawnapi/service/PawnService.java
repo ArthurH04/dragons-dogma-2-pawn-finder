@@ -63,11 +63,19 @@ public class PawnService {
         return pawnRepository.findByPawnId(id);
     }
 
+    public Page<Pawn> getPawnsByUsername(String username, Integer page, Integer size) {
+        Pageable pageRequest = PageRequest.of(page, size);
+        return pawnRepository.findAllByUser_Username(username, pageRequest);
+    }
+
     public void delete(UUID pawnId, User user) {
         Pawn pawn = pawnRepository.findById(pawnId)
                 .orElseThrow(() -> new EntityNotFoundException("Pawn not found"));
 
-        if (!pawn.getUser().getId().equals(user.getId())) {
+        boolean isOwner = pawn.getUser().getId().equals(user.getId());
+        boolean isAdmin = user.getRole() == Role.ADMIN;
+
+        if (!isOwner && !isAdmin) {
             throw new AccessDeniedException("You cannot delete another user's pawn");
         }
 

@@ -55,13 +55,21 @@ public class WebSecurityConfiguration {
                                 .csrf(csrf -> csrf.disable())
                                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                                 .authorizeHttpRequests(auth -> auth
-                                                .requestMatchers("/api/auth/refresh-token").permitAll()
+                                                // Authentication endpoints - public
                                                 .requestMatchers("/api/auth/**").permitAll()
-                                                .requestMatchers("/api/pawns", "/api/pawns/**").permitAll()
-                                                .requestMatchers("/api/users/change-password").authenticated()
+                                                
+                                                // Pawns - public read-only (GET), authenticated write operations (POST, PUT, DELETE)
+                                                .requestMatchers("GET", "/api/pawns").permitAll()
+                                                .requestMatchers("GET", "/api/pawns/**").permitAll()
+                                                .requestMatchers("POST", "/api/pawns").authenticated()
+                                                .requestMatchers("PUT", "/api/pawns/**").authenticated()
+                                                .requestMatchers("DELETE", "/api/pawns/**").authenticated()
+                                                
+                                                // User endpoints - authenticated
                                                 .requestMatchers("/api/users/**").authenticated()
                                                 .requestMatchers("/profile/**").authenticated()
                                                 .requestMatchers("/me").authenticated()
+                                                
                                                 .anyRequest().authenticated())
                                 .addFilterBefore(authRateLimitFilter, UsernamePasswordAuthenticationFilter.class)
                                 .addFilterBefore(jwtAuthenticationFilter,

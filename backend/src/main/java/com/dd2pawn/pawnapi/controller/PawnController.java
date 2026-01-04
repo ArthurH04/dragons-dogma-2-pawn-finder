@@ -47,7 +47,6 @@ public class PawnController {
                 .orElse(ResponseEntity.notFound().build());
     }
     
-
     @GetMapping
     public ResponseEntity<Page<PawnResponse>> getPawns(
             @RequestParam(value = "name", required = false) String name,
@@ -57,6 +56,15 @@ public class PawnController {
             @RequestParam(value = "page", defaultValue = "0") Integer page,
             @RequestParam(value = "size", defaultValue = "10") Integer size) {
         Page<Pawn> result = pawnService.getPawns(name, level, platform, gender, page, size);
+        Page<PawnResponse> map = result.map(pawnMapper::toResponse);
+        return ResponseEntity.ok(map);
+    }
+
+    @GetMapping("/user/{username}")
+    public ResponseEntity<Page<PawnResponse>> getPawnByUser(@PathVariable String username,
+                                                            @RequestParam(value = "page", defaultValue = "0") Integer page,
+                                                            @RequestParam(value = "size", defaultValue = "10") Integer size) {
+        Page<Pawn> result = pawnService.getPawnsByUsername(username, page, size);
         Page<PawnResponse> map = result.map(pawnMapper::toResponse);
         return ResponseEntity.ok(map);
     }
