@@ -109,6 +109,7 @@ public class PawnService {
         return pawnRepository.findAll(specs, pageRequest);
     }
 
+    @Transactional
     public Pawn updatePawn(UUID pawnId, PawnRequest pawnRequest, User user) {
         Pawn pawn = pawnRepository.findById(pawnId)
                 .orElseThrow(() -> new EntityNotFoundException("Pawn not found"));
