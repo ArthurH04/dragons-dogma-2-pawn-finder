@@ -1,9 +1,9 @@
 package com.dd2pawn.pawnapi.controller;
 
 import com.dd2pawn.pawnapi.dto.ChangePasswordRequest;
+import com.dd2pawn.pawnapi.dto.CurrentUserResponse;
 import com.dd2pawn.pawnapi.dto.UserResponse;
 import com.dd2pawn.pawnapi.mapper.UserMapper;
-import com.dd2pawn.pawnapi.repository.UserRepository;
 import com.dd2pawn.pawnapi.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -40,8 +40,8 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public String getCurrentUser(Authentication authentication){
-       return userService.getCurrentUser(authentication);
+    public ResponseEntity<CurrentUserResponse> getCurrentUser(Authentication authentication){
+       return ResponseEntity.ok(userService.getCurrentUser(authentication));
     }
 
     @PostMapping("/change-password")

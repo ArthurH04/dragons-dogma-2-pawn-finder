@@ -1,12 +1,9 @@
 package com.dd2pawn.pawnapi.service;
 
-import com.dd2pawn.pawnapi.dto.UserRequest;
-import com.dd2pawn.pawnapi.exception.DuplicateEntryException;
+import com.dd2pawn.pawnapi.dto.CurrentUserResponse;
 import com.dd2pawn.pawnapi.exception.InvalidCredentialsException;
 import com.dd2pawn.pawnapi.exception.OperationNotAllowedException;
-import com.dd2pawn.pawnapi.mapper.UserMapper;
 import com.dd2pawn.pawnapi.model.User;
-import com.dd2pawn.pawnapi.model.enums.Role;
 import com.dd2pawn.pawnapi.repository.PawnRepository;
 import com.dd2pawn.pawnapi.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -45,11 +42,17 @@ public class UserService {
         return pawnRepository.existsByUser(user);
     }
 
-    public String getCurrentUser(Authentication authentication){
+    public CurrentUserResponse getCurrentUser(Authentication authentication){
         String email = authentication.getName();
         User user = userRepository.findByEmail(email)
                 .orElseThrow();
-        return user.getDisplayName();
+
+        return CurrentUserResponse.builder()
+                .id(user.getId())
+                .username(user.getDisplayName())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .build();
     }
 
     public void changePassword(Authentication authentication, String currentPassword, String newPassword){
