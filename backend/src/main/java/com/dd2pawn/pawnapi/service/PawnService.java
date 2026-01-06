@@ -52,6 +52,11 @@ public class PawnService {
     	
         Pawn pawn = pawnMapper.toEntity(pawnRequest);
         pawn.setUser(user);
+        if(pawnRequest.getImageUrl() != null && !pawnRequest.getImageUrl().isEmpty()) {
+            pawn.setImageUrl(pawnRequest.getImageUrl());
+        } else {
+            pawn.setImageUrl("https://mockimg.co/1280x720");
+        }
         return pawnRepository.save(pawn);
     }
 

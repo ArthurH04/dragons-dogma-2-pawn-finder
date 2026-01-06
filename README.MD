@@ -6,8 +6,6 @@ This is a complete project that includes frontend, backend, and advanced feature
 
 ---
 
-
-
 ## 🛠️ Tech Stack
 
 - ⚛️ **Frontend**: React  
@@ -25,7 +23,6 @@ This is a complete project that includes frontend, backend, and advanced feature
 - 🐳 Docker and Docker Compose  
 
 ---
-
 
 ## ▶️ Running Locally
 
@@ -70,37 +67,51 @@ npm run start
 cd backend
 ```
 
+
 2. Create the `.env` file from the example:
 
 ```bash
 cp .env.example .env
 ```
 
-3. Configure the environment variables in `.env` as below:
+3. Configure the environment variables in `.env` as below (fill with your own values):
 
 **Database Configuration**
-
 ```
-DB_USER=postgres
+DB_USER=user
 DB_PASSWORD=your_secure_password_here
-DB_NAME=dd2pawn
-DB_PORT=5432
+DB_NAME=name
+DB_PORT=1234
+```
+
+**Application Email Configuration (for sending emails, e.g. password recovery)**
+```
+APP_EMAIL=your_email@gmail.com
+APP_PASSWORD=your_app_password
 ```
 
 **PgAdmin Configuration**
-
 ```
 PGADMIN_EMAIL=admin@admin.com
 PGADMIN_PASSWORD=your_admin_password_here
 PGADMIN_PORT=5050
 ```
 
-**JWT Secrets Configuration**
+**JWT Configuration**
 ```
-JWT_SECRET=min 512bits
-JWT_EXPIRATION=
-JWT_REFRESH_EXPIRATION=
+JWT_SECRET=your_512bit_secret_key
+JWT_EXPIRATION=3600000 # in milliseconds (e.g. 1h)
+JWT_REFRESH_EXPIRATION=604800000 # in milliseconds (e.g. 7 days)
 ```
+
+**Cloudinary Configuration (optional, for image upload)**
+```
+CLOUD_NAME=your_cloud_name
+API_KEY=your_api_key
+API_SECRET=your_api_secret
+```
+
+> See the `.env.example` file for all available variables.
 
 4. Start the Docker containers:
 

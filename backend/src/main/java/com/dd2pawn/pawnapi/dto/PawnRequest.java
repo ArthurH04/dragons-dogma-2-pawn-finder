@@ -36,7 +36,6 @@ public class PawnRequest {
     @NotBlank(message = "Notes cannot be empty")
     private String notes;
 
-    @NotBlank(message = "Image url cannot be empty")
     private String imageUrl;
 
     @NotNull(message = "Platform cannot be empty")

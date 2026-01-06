@@ -69,6 +69,8 @@ public class WebSecurityConfiguration {
                                                 .requestMatchers("/api/users/**").authenticated()
                                                 .requestMatchers("/profile/**").authenticated()
                                                 .requestMatchers("/me").authenticated()
+
+                                                .requestMatchers("/upload").authenticated()
                                                 
                                                 .anyRequest().authenticated())
                                 .addFilterBefore(authRateLimitFilter, UsernamePasswordAuthenticationFilter.class)

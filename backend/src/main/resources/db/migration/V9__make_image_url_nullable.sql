@@ -1,0 +1,2 @@
+ALTER TABLE pawns
+ALTER COLUMN image_url DROP NOT NULL;

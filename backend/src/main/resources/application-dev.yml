@@ -18,6 +18,11 @@ spring:
           starttls.required: true
           ssl.trust: smtp.gmail.com
 
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
   jpa:
     show-sql: true
     hibernate:
@@ -34,3 +39,8 @@ security:
   jwtSecret: ${JWT_SECRET}
   jwtExpiration: ${JWT_EXPIRATION}
   jwtRefreshExpiration: ${JWT_REFRESH_EXPIRATION}
+
+cloudinary:
+  cloud_name: ${CLOUD_NAME}
+  api_key: ${API_KEY}
+  api_secret: ${API_SECRET}
