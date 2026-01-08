@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.dd2pawn.pawnapi.model.Token;
 import com.dd2pawn.pawnapi.repository.TokenRepository;
+import com.dd2pawn.pawnapi.util.CookieUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,25 +16,32 @@ import jakarta.servlet.http.HttpServletResponse;
 public class CustomLogoutHandler implements LogoutHandler {
 
     private final TokenRepository tokenRepository;
+    private final CookieUtil cookieUtil;
 
-    public CustomLogoutHandler(TokenRepository tokenRepository) {
+    public CustomLogoutHandler(TokenRepository tokenRepository, CookieUtil cookieUtil) {
         this.tokenRepository = tokenRepository;
+        this.cookieUtil = cookieUtil;
     }
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        String authHeader = request.getHeader("Authorization");
+        String token = null;
 
-        if(authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return;
+        token = cookieUtil.extractTokenFromCookie(request.getCookies(), "accessToken");
+
+        if (token == null) {
+            String authHeader = request.getHeader("Authorization");
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                token = authHeader.substring(7);
+            }
         }
-
-        String token = authHeader.substring(7);
-        Token storedToken = tokenRepository.findByAccessToken(token).orElse(null);
-
-        if(storedToken != null) {
-            storedToken.setLoggedOut(true);
-            tokenRepository.save(storedToken);
+        if (token != null) {
+            Token storedToken = tokenRepository.findByAccessToken(token).orElse(null);
+            if (storedToken != null) {
+                storedToken.setLoggedOut(true);
+                tokenRepository.save(storedToken);
+            }
         }
+        cookieUtil.clearAuthCookies(response);
     }
 }

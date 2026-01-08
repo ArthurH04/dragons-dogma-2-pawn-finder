@@ -12,6 +12,7 @@ import com.dd2pawn.pawnapi.repository.TokenRepository;
 import com.dd2pawn.pawnapi.repository.UserRepository;
 import com.dd2pawn.pawnapi.security.filter.AuthRateLimitFilter;
 import com.dd2pawn.pawnapi.security.jwt.JwtUtils;
+import com.dd2pawn.pawnapi.util.CookieUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -38,9 +39,9 @@ public class AuthService {
         private final AuthRateLimitFilter authRateLimitFilter;
         private final LoginRateLimitService loginRateLimitService;
         private final HttpServletRequest httpRequest;
+        private final CookieUtil cookieUtil;
 
-
-        public AuthenticationResponse register(RegisterRequest request) {
+        public AuthenticationResponse register(RegisterRequest request, HttpServletResponse response) {
 
                 if (userRepository.existsByEmail(request.getEmail())) {
                         throw new DuplicateEntryException("email", "Email is already in use");
@@ -57,16 +58,22 @@ public class AuthService {
                                 .build();
 
                 userRepository.save(user);
+
                 String accessToken = jwtService.generateToken(user);
                 String refreshToken = jwtService.generateRefreshToken(user);
+
+                cookieUtil.addAccessTokenCookie(response, accessToken);
+                cookieUtil.addRefreshTokenCookie(response, refreshToken);
+
                 saveUserToken(accessToken, refreshToken, user);
                 return AuthenticationResponse.builder()
-                                .token(accessToken)
-                                .refreshToken(refreshToken)
+                                .message("User registered successfully")
+                                .username(user.getDisplayName())
+                                .email(user.getEmail())
                                 .build();
         }
 
-        public AuthenticationResponse authenticate(AuthenticationRequest request) {
+        public AuthenticationResponse authenticate(AuthenticationRequest request, HttpServletResponse response) {
 
                 String ip = authRateLimitFilter.getClientIp(httpRequest);
                 loginRateLimitService.checkBlockedIp(ip);
@@ -78,10 +85,8 @@ public class AuthService {
                                                         request.getPassword()));
                 } catch (Exception ex) {
 
-                        
                         System.out.println("Failed login attempt from IP: " + ip);
                         loginRateLimitService.consumeFailedAttempt(ip);
-
 
                         throw new InvalidCredentialsException("Invalid email or password");
                 }
@@ -91,23 +96,36 @@ public class AuthService {
                 String accessToken = jwtService.generateToken(user);
                 String jwtRefreshExpiration = jwtService.generateRefreshToken(user);
 
+                cookieUtil.addAccessTokenCookie(response, accessToken);
+                cookieUtil.addRefreshTokenCookie(response, jwtRefreshExpiration);
+
                 revokeAllUserTokens(user);
                 saveUserToken(accessToken, jwtRefreshExpiration, user);
                 return AuthenticationResponse.builder()
-                                .token(accessToken)
-                                .refreshToken(jwtRefreshExpiration)
+                                .message("User authenticated successfully")
+                                .username(user.getDisplayName())
+                                .email(user.getEmail())
                                 .build();
         }
 
-        public ResponseEntity<AuthenticationResponse> refreshToken(HttpServletRequest request, HttpServletResponse response)
+        public ResponseEntity<AuthenticationResponse> refreshToken(HttpServletRequest request,
+                        HttpServletResponse response)
                         throws IOException {
+
+                String token = cookieUtil.extractTokenFromCookie(
+                                request.getCookies(),
+                                "refreshToken");
+
+                if (token == null) {
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+                }
+
                 final String authHeader = request.getHeader("Authorization");
 
                 if (authHeader == null || !authHeader.startsWith("Bearer ")) {
                         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
                 }
 
-                String token = authHeader.substring(7);
                 String userEmail = jwtService.extractUsername(token);
                 User user = userRepository.findByEmail(userEmail)
                                 .orElseThrow(() -> new RuntimeException("No user found"));
@@ -116,9 +134,15 @@ public class AuthService {
                         String accessToken = jwtService.generateToken(user);
                         String refreshToken = jwtService.generateRefreshToken(user);
 
+                        cookieUtil.addAccessTokenCookie(response, accessToken);
+                        cookieUtil.addRefreshTokenCookie(response, refreshToken);
+
                         revokeAllUserTokens(user);
                         saveUserToken(accessToken, refreshToken, user);
-                        return ResponseEntity.ok(AuthenticationResponse.builder().token(accessToken).refreshToken(refreshToken).build());
+
+                        return ResponseEntity.ok(AuthenticationResponse.builder()
+                                        .message("Token refreshed successfully").username(user.getDisplayName())
+                                        .email(user.getEmail()).build());
                 }
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 

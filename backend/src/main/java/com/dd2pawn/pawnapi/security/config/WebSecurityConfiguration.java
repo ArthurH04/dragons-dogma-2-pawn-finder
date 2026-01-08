@@ -19,6 +19,7 @@ import com.dd2pawn.pawnapi.security.filter.AuthRateLimitFilter;
 import com.dd2pawn.pawnapi.security.jwt.AuthEntryPointJwt;
 import com.dd2pawn.pawnapi.security.jwt.JwtUtils;
 import com.dd2pawn.pawnapi.security.service.CustomUserDetailsService;
+import com.dd2pawn.pawnapi.util.CookieUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -37,8 +38,9 @@ public class WebSecurityConfiguration {
         // JWT filter to validate tokens with every request
         @Bean
         public JwtAuthenticationFilter jwtAuthenticationFilter(JwtUtils jwtUtils,
-                        CustomUserDetailsService userDetailsService) {
-                return new JwtAuthenticationFilter(jwtUtils, userDetailsService);
+                        CustomUserDetailsService userDetailsService,
+                        CookieUtil cookieUtil) {
+                return new JwtAuthenticationFilter(jwtUtils, userDetailsService, cookieUtil);
         }
 
         @Bean
@@ -57,21 +59,22 @@ public class WebSecurityConfiguration {
                                 .authorizeHttpRequests(auth -> auth
                                                 // Authentication endpoints - public
                                                 .requestMatchers("/api/auth/**").permitAll()
-                                                
-                                                // Pawns - public read-only (GET), authenticated write operations (POST, PUT, DELETE)
+
+                                                // Pawns - public read-only (GET), authenticated write operations (POST,
+                                                // PUT, DELETE)
                                                 .requestMatchers("GET", "/api/pawns").permitAll()
                                                 .requestMatchers("GET", "/api/pawns/**").permitAll()
                                                 .requestMatchers("POST", "/api/pawns").authenticated()
                                                 .requestMatchers("PUT", "/api/pawns/**").authenticated()
                                                 .requestMatchers("DELETE", "/api/pawns/**").authenticated()
-                                                
+
                                                 // User endpoints - authenticated
                                                 .requestMatchers("/api/users/**").authenticated()
                                                 .requestMatchers("/profile/**").authenticated()
                                                 .requestMatchers("/me").authenticated()
 
                                                 .requestMatchers("/upload").authenticated()
-                                                
+
                                                 .anyRequest().authenticated())
                                 .addFilterBefore(authRateLimitFilter, UsernamePasswordAuthenticationFilter.class)
                                 .addFilterBefore(jwtAuthenticationFilter,
