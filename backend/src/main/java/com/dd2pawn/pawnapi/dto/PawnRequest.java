@@ -28,7 +28,7 @@ public class PawnRequest {
     private Vocations vocations;
 
     @NotNull(message = "Inclination cannot be empty")
-    private List<Inclinations> inclinations;
+    private Inclinations inclinations;
 
     @NotNull(message = "Specialization cannot be empty")
     private Specializations specializations;

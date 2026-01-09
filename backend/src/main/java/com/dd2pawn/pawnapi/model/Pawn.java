@@ -43,11 +43,10 @@ public class Pawn extends BaseEntity {
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private Vocations vocations;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "pawn_inclinations", joinColumns = @JoinColumn(name = "pawn_id"))
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private List<Inclinations> inclinations;
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    private Inclinations inclinations;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

@@ -14,7 +14,7 @@ public class PawnResponse {
     private Gender gender;
     private Integer level;
     private Vocations vocations;
-    private List<Inclinations> inclinations;
+    private Inclinations inclinations;
     private Specializations specializations;
     private String notes;
     private String imageUrl;

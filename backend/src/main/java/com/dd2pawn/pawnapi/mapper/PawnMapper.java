@@ -9,9 +9,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface PawnMapper {
 
-    @Mapping(source = "inclinations", target = "inclinations")
     PawnResponse toResponse(Pawn pawn);
 
-    @Mapping(source = "inclinations", target = "inclinations")
     Pawn toEntity(PawnRequest request);
 }
