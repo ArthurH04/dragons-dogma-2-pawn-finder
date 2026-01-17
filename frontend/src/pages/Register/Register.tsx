@@ -2,12 +2,15 @@ import { useState } from "react";
 import { getCurrentUser, login, register } from "../../services/authService";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router";
+import { Eye, EyeOff } from 'lucide-react';
+
 
 export default function Register() {
     const [email, setEmail] = useState();
     const [username, setUsername] = useState();
     const [password, setPassword] = useState();
     const [errorMessage, setErrorMessage] = useState();
+    const [showPassword, setShowPassword] = useState(false);
 
     const { loginUser } = useAuth();
     const navigate = useNavigate();
@@ -29,12 +32,90 @@ export default function Register() {
         }
     }
 
-    return (<form onSubmit={handleSubmit}>
-            <input type="email" placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
-            <input type="text" placeholder="Username" onChange={(e) => setUsername(e.target.value)} />
-            <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
-            <button type="submit">Register</button>
-            {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
-        </form>
-    );
+ 
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-slate-800 via-zinc-900 to-neutral-950 flex flex-col items-center justify-center pb-25 p-4">
+      <div className="text-center mb-8">
+        <h1 className="text-5xl font-serif text-amber-400 mb-2 drop-shadow-lg">Pawn Finder</h1>
+        <p className="text-gray-400 text-sm">Dragon's Dogma 2</p>
+      </div>
+
+      <div className="w-full max-w-md bg-gradient-to-br from-zinc-800/95 to-zinc-900/98 border-2 border-amber-700/50 rounded-lg p-8 shadow-2xl backdrop-blur-sm">
+        <div className="text-center mb-6">
+          <h2 className="text-2xl font-serif text-white mb-2">Create Account</h2>
+          <p className="text-gray-400 text-sm">Join the community and share your pawns</p>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <label className="block text-white text-sm mb-2">Username</label>
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Choose a username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full bg-zinc-950/70 border border-amber-800/30 rounded px-4 py-3 text-gray-200 placeholder-gray-500 focus:outline-none focus:border-amber-600 focus:ring-1 focus:ring-amber-600/50 transition-all"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-white text-sm mb-2">Email</label>
+            <input
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full bg-zinc-950/70 border border-amber-800/30 rounded px-4 py-3 text-gray-200 placeholder-gray-500 focus:outline-none focus:border-amber-600 focus:ring-1 focus:ring-amber-600/50 transition-all"
+            />
+          </div>
+
+          <div>
+            <label className="block text-white text-sm mb-2">Password</label>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Create a password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full bg-zinc-950/70 border border-amber-800/30 rounded px-4 py-3 text-gray-200 placeholder-gray-500 focus:outline-none focus:border-amber-600 focus:ring-1 focus:ring-amber-600/50 transition-all"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-amber-700/80 rounded flex items-center justify-center hover:bg-amber-600/90 transition-colors shadow-lg"
+              >
+                {showPassword ? (
+                  <EyeOff className="w-3 h-3 text-white" />
+                ) : (
+                  <Eye className="w-3 h-3 text-white" />
+                )}
+              </button>
+            </div>
+          </div>
+
+          {errorMessage && (
+            <p className="text-red-400 text-sm">{errorMessage}</p>
+          )}
+
+          <button
+            onClick={handleSubmit}
+            className="w-full bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-black font-bold py-3 rounded transition-all duration-200 shadow-xl tracking-wide"
+          >
+            Create Account
+          </button>
+        </div>
+
+        <div className="text-center mt-6">
+          <p className="text-gray-400 text-sm">
+            Already have an account?{' '}
+            <a href="/login" className="text-amber-400 hover:text-amber-300 transition-colors font-medium">
+              Sign in
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
 }

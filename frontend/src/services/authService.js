@@ -18,5 +18,15 @@ export const getCurrentUser = async() => {
 }
 
 export const logout = async () => {
-    await axios.post(`http://localhost:8080/api/auth/logout`, {}, { withCredentials: true });
+    await axios.post(`${API_URL}logout`, {}, { withCredentials: true });
+}
+
+export const forgotPassword = async (email) => {
+    const response = await axios.post(`${API_URL}forgot`, { email }, { withCredentials: true });
+    return response.data;
+}
+
+export const resetPassword = async (token, newPassword) => {
+    const response = await axios.post(`${API_URL}reset`, { token, newPassword }, { withCredentials: true });
+    return response.data;
 }
