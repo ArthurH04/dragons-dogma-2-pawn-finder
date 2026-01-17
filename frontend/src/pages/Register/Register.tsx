@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { login, register } from "../../services/authService";
+import { getCurrentUser, login, register } from "../../services/authService";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router";
 
@@ -17,10 +17,9 @@ export default function Register() {
         setErrorMessage("");
 
         try {
-            const data = await register(email, username, password);
-            
-            const loginData = await login(email, password);
-            loginUser(loginData);
+            await register(email, username, password);
+            const user = await getCurrentUser();
+            loginUser(user);
             navigate("/", {replace: true});
         } catch (error) {
             if (error.response && error.response.data) {
