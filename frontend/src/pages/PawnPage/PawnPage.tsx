@@ -8,9 +8,12 @@ interface Pawn {
   vocations: string;
   name: string;
   level: number;
-  inclinations: string[];
+  inclinations: string;
+  specializations: string;
+  notes: string;
   gender: string;
   imageUrl: string;
+  createdBy: string;
 }
 
 export default function PawnPage() {
@@ -48,6 +51,7 @@ export default function PawnPage() {
       </h1>
 
       <div className="space-y-3 text-yellow-100">
+        <p><span className="font-semibold text-yellow-300">Created by:</span> {pawn.createdBy}</p>
         <p><span className="font-semibold text-yellow-300">Pawn ID:</span> {pawn.pawnId}</p>
         <p><span className="font-semibold text-yellow-300">Pawn name:</span> {pawn.name}</p>
         <p><span className="font-semibold text-yellow-300">Gender:</span> {pawn.gender}</p>
