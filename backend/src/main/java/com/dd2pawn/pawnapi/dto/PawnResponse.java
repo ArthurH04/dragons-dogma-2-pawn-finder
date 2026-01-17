@@ -20,4 +20,5 @@ public class PawnResponse {
     private String imageUrl;
     private Platform platform;
     private String platformIdentifier;
+    private String createdBy;
 }

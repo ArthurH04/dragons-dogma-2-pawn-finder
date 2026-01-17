@@ -9,6 +9,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface PawnMapper {
 
+    @Mapping(target = "createdBy", expression = "java(pawn.getUser().getDisplayName())")
     PawnResponse toResponse(Pawn pawn);
 
     Pawn toEntity(PawnRequest request);
