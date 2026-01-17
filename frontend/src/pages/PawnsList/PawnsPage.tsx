@@ -3,7 +3,6 @@ import Navbar from "../../components/Navbar";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { getAllPawns } from "../../services/pawnService";
 
-
 interface Pawn {
   pawnId: string;
   platformIdentifier: string;
@@ -29,10 +28,10 @@ export default function PawnsPage() {
         setLoading(true);
         const data = await getAllPawns({ platform: selectedPlatform });
         setPawns(data.content || []);
-        console.log(data)
+        console.log(data);
       } catch (error) {
-        if(error.response && error.response.data){
-            console.log(error.response.data.message || "Failed to fetch pawns");
+        if (error.response && error.response.data) {
+          console.log(error.response.data.message || "Failed to fetch pawns");
         }
       } finally {
         setLoading(false);
@@ -44,7 +43,7 @@ export default function PawnsPage() {
   const handlePlatformClick = (platform: string) => {
     setSearchParams({ platform });
   };
-  
+
   const navigate = useNavigate();
 
   const handleViewPawnClick = (pawnId: string) => {
@@ -52,74 +51,93 @@ export default function PawnsPage() {
   };
 
   return (
-  <div className="min-h-screen bg-zinc-900 text-yellow-200 font-sans">
-    <div className="p-6 max-w-7xl mx-auto">
-      <h1 className="text-4xl font-extrabold mb-6 text-center text-yellow-300 tracking-wider drop-shadow-md">
-        Pawn Guild
-      </h1>
+    <div className="min-h-screen bg-gradient-to-b from-slate-800 via-zinc-900 to-neutral-950 text-gray-200 p-6">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-10">
+          <h1 className="text-5xl font-serif text-amber-400 drop-shadow-lg mb-2">
+            Pawn Guild
+          </h1>
+          <p className="text-gray-400 text-sm">Dragon's Dogma 2</p>
+        </div>
 
-      <div className="flex justify-center gap-4 mb-6 flex-wrap">
-        {platforms.map((platform) => (
-          <button
-            key={platform}
-            onClick={() => handlePlatformClick(platform)}
-            className={`px-5 py-2 rounded-lg font-semibold text-sm shadow-md transition-all duration-200 ${
-              selectedPlatform === platform
-                ? "bg-yellow-400 text-zinc-900 shadow-lg"
-                : "bg-zinc-800 text-yellow-300 hover:bg-yellow-500 hover:text-zinc-900"
-            }`}
-          >
-            {platform}
-          </button>
-        ))}
+        <div className="flex justify-center gap-4 mb-8 flex-wrap">
+          {platforms.map((platform) => (
+            <button
+              key={platform}
+              onClick={() => handlePlatformClick(platform)}
+              className={`px-6 py-2 rounded-lg font-semibold text-sm tracking-wide transition-all shadow-lg border ${
+                selectedPlatform === platform
+                  ? "bg-gradient-to-r from-amber-600 to-amber-700 text-black border-amber-500"
+                  : "bg-zinc-900/80 text-amber-300 border-amber-800/40 hover:bg-amber-600 hover:text-black"
+              }`}
+            >
+              {platform}
+            </button>
+          ))}
+        </div>
+
+        <div className="overflow-x-auto rounded-lg border-2 border-amber-700/40 bg-gradient-to-br from-zinc-800/95 to-zinc-900/95 shadow-2xl backdrop-blur-sm">
+          <table className="min-w-full text-sm">
+            <thead className="bg-zinc-950/80 border-b border-amber-700/40">
+              <tr>
+                <th className="px-4 py-4 text-left font-serif text-amber-400 tracking-wide">
+                  Friend Link
+                </th>
+                <th className="px-4 py-4 text-left font-serif text-amber-400 tracking-wide">
+                  Vocation
+                </th>
+                <th className="px-4 py-4 text-left font-serif text-amber-400 tracking-wide">
+                  Pawn Name
+                </th>
+                <th className="px-4 py-4 text-left font-serif text-amber-400 tracking-wide">
+                  Level
+                </th>
+                <th className="px-4 py-4 text-left font-serif text-amber-400 tracking-wide">
+                  Inclinations
+                </th>
+                <th className="px-4 py-4 text-left font-serif text-amber-400 tracking-wide">
+                  Gender
+                </th>
+                <th className="px-4 py-4 text-center font-serif text-amber-400 tracking-wide">
+                  Access
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {pawns.map((pawn, idx) => (
+                <tr
+                  key={idx}
+                  className="odd:bg-zinc-900/40 even:bg-zinc-800/40 hover:bg-amber-900/20 transition-colors"
+                >
+                  <td className="px-4 py-3">{pawn.platformIdentifier}</td>
+                  <td className="px-4 py-3">{pawn.vocations}</td>
+                  <td className="px-4 py-3 font-semibold text-amber-300">
+                    {pawn.name}
+                  </td>
+                  <td className="px-4 py-3">{pawn.level}</td>
+                  <td className="px-4 py-3">{pawn.inclinations}</td>
+                  <td className="px-4 py-3">{pawn.gender}</td>
+                  <td className="px-4 py-3 text-center">
+                    <button
+                      onClick={() => handleViewPawnClick(pawn.pawnId)}
+                      className="px-4 py-2 rounded bg-gradient-to-r from-amber-600 to-amber-700 text-black font-bold shadow-lg hover:from-amber-500 hover:to-amber-600 transition-all"
+                    >
+                      View Pawn
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {loading && (
+          <p className="text-center mt-6 text-amber-400 font-medium">
+            Loading pawns...
+          </p>
+        )}
       </div>
     </div>
-
-    <div className="overflow-x-auto px-6 pb-12">
-      <table className="min-w-full bg-zinc-800 border border-yellow-600 rounded-lg shadow-md">
-        <thead className="bg-zinc-700 border-b border-yellow-500">
-          <tr>
-            <th className="px-4 py-3 text-left text-yellow-300">Friend Link</th>
-            <th className="px-4 py-3 text-left text-yellow-300">Vocation</th>
-            <th className="px-4 py-3 text-left text-yellow-300">Pawn Name</th>
-            <th className="px-4 py-3 text-left text-yellow-300">Level</th>
-            <th className="px-4 py-3 text-left text-yellow-300">Inclinations</th>
-            <th className="px-4 py-3 text-left text-yellow-300">Gender</th>
-            <th className="px-4 py-3 text-center text-yellow-300">Access</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {pawns.map((pawn, idx) => (
-            <tr
-              key={idx}
-              className="even:bg-zinc-700 odd:bg-zinc-800 hover:bg-yellow-900/20 transition-colors"
-            >
-              <td className="px-4 py-2 text-yellow-100">{pawn.platformIdentifier}</td>
-              <td className="px-4 py-2 text-yellow-100">{pawn.vocations}</td>
-              <td className="px-4 py-2 text-yellow-100 font-semibold">{pawn.name}</td>
-              <td className="px-4 py-2 text-yellow-100">{pawn.level}</td>
-              <td className="px-4 py-2 text-yellow-100">{pawn.inclinations}</td>
-              <td className="px-4 py-2 text-yellow-100">{pawn.gender}</td>
-              <td className="px-4 py-2 text-center">
-                <button
-                  onClick={() => handleViewPawnClick(pawn.pawnId)}
-                  className="px-3 py-1 rounded bg-yellow-400 text-zinc-900 font-semibold hover:bg-yellow-500 shadow-md transition-colors"
-                >
-                  View pawn page
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {loading && (
-        <p className="text-center mt-4 text-yellow-300 font-medium">
-          Loading...
-        </p>
-      )}
-    </div>
-  </div>
-);
+  );
 }
